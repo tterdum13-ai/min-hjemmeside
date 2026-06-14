@@ -2,51 +2,301 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dansk Grund & Ejendom - Dashboard</title>
 
 <style>
 body{
+    margin:0;
+    font-family:Arial,sans-serif;
     background:#0f1117;
     color:white;
-    font-family:Arial;
-    text-align:center;
-    padding-top:100px;
 }
 
-h1{
+header{
+    background:#151922;
+    padding:20px;
+    border-bottom:2px solid #f5c542;
+}
+
+h1,h2{
     color:#f5c542;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+.card{
+    background:#1b2130;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
+
+input, textarea{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    margin-bottom:10px;
+    background:#2a3142;
+    border:none;
+    border-radius:8px;
+    color:white;
 }
 
 button{
     background:#f5c542;
+    color:black;
     border:none;
-    padding:12px 20px;
+    padding:10px 15px;
     border-radius:8px;
     cursor:pointer;
+    font-weight:bold;
+}
+
+.report{
+    background:#2a3142;
+    padding:10px;
+    margin-top:10px;
+    border-radius:8px;
+}
+
+img{
+    max-width:100%;
+    border-radius:10px;
+    margin-top:10px;
+}
+
+.logout{
+    float:right;
 }
 </style>
 </head>
 <body>
 
-<h1>Medarbejder Portal</h1>
-
-<p>Velkommen <span id="user"></span></p>
-
-<button onclick="logout()">Log ud</button>
-
 <script>
 if(localStorage.getItem("loggedIn") !== "true"){
     window.location.href = "login.html";
 }
+</script>
 
-document.getElementById("user").innerText =
-localStorage.getItem("user");
+<header>
+    <h1>Dansk Grund & Ejendom</h1>
+    <button class="logout" onclick="logout()">Log Ud</button>
+</header>
+
+<div class="container">
+
+<div class="card">
+    <h2>Profil</h2>
+    <p>Velkommen: <b id="rankName"></b></p>
+</div>
+
+<div class="card">
+    <h2>Arbejdsskade Rapport</h2>
+
+    <input type="text" id="skadeNavn" placeholder="Navn">
+    <textarea id="skadeTekst" placeholder="Beskrivelse"></textarea>
+
+    <button onclick="opretSkade()">Indsend Rapport</button>
+
+    <div id="skader"></div>
+</div>
+
+<div class="card" id="elevPanel" style="display:none;">
+    <h2>Elev Administration</h2>
+
+    <input type="text" id="elevNavn" placeholder="Elev Navn">
+
+    <button onclick="opretElev()">Opret Elev</button>
+
+    <div id="elever"></div>
+</div>
+
+<div class="card" id="byggePanel" style="display:none;">
+    <h2>Byggeplaner</h2>
+
+    <input type="text" id="bygTitel" placeholder="Projekt Titel">
+
+    <input type="text" id="bygBillede" placeholder="Billede URL">
+
+    <textarea id="bygBeskrivelse" placeholder="Beskrivelse"></textarea>
+
+    <button onclick="opretPlan()">Opret Byggeplan</button>
+
+    <div id="planer"></div>
+</div>
+
+</div>
+
+<script>
+
+const rank = localStorage.getItem("user");
+
+document.getElementById("rankName").innerText = rank;
+
+if(rank === "Instrucktør" || rank === "Mini Direktør"){
+    document.getElementById("elevPanel").style.display = "block";
+}
+
+if(
+rank === "Oplært" ||
+rank === "Instrucktør" ||
+rank === "Mini Direktør"
+){
+    document.getElementById("byggePanel").style.display = "block";
+}
 
 function logout(){
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("user");
-    window.location.href = "login.html";
+    window.location.href="login.html";
 }
+
+function opretSkade(){
+
+const navn =
+document.getElementById("skadeNavn").value;
+
+const tekst =
+document.getElementById("skadeTekst").value;
+
+if(!navn || !tekst) return;
+
+let data =
+JSON.parse(localStorage.getItem("skader") || "[]");
+
+data.push({
+navn,
+tekst
+});
+
+localStorage.setItem(
+"skader",
+JSON.stringify(data)
+);
+
+visSkader();
+}
+
+function visSkader(){
+
+const data =
+JSON.parse(localStorage.getItem("skader") || "[]");
+
+let html = "";
+
+data.forEach(r=>{
+
+html += `
+<div class="report">
+<b>${r.navn}</b><br>
+${r.tekst}
+</div>
+`;
+
+});
+
+document.getElementById("skader").innerHTML = html;
+}
+
+function opretElev(){
+
+const elev =
+document.getElementById("elevNavn").value;
+
+if(!elev) return;
+
+let data =
+JSON.parse(localStorage.getItem("elever") || "[]");
+
+data.push(elev);
+
+localStorage.setItem(
+"elever",
+JSON.stringify(data)
+);
+
+visElever();
+}
+
+function visElever(){
+
+const data =
+JSON.parse(localStorage.getItem("elever") || "[]");
+
+let html="";
+
+data.forEach(e=>{
+
+html += `
+<div class="report">${e}</div>
+`;
+
+});
+
+document.getElementById("elever").innerHTML=html;
+}
+
+function opretPlan(){
+
+const titel =
+document.getElementById("bygTitel").value;
+
+const billede =
+document.getElementById("bygBillede").value;
+
+const tekst =
+document.getElementById("bygBeskrivelse").value;
+
+if(!titel) return;
+
+let data =
+JSON.parse(localStorage.getItem("planer") || "[]");
+
+data.push({
+titel,
+billede,
+tekst
+});
+
+localStorage.setItem(
+"planer",
+JSON.stringify(data)
+);
+
+visPlaner();
+}
+
+function visPlaner(){
+
+const data =
+JSON.parse(localStorage.getItem("planer") || "[]");
+
+let html="";
+
+data.forEach(p=>{
+
+html += `
+<div class="report">
+<h3>${p.titel}</h3>
+<p>${p.tekst}</p>
+<img src="${p.billede}">
+</div>
+`;
+
+});
+
+document.getElementById("planer").innerHTML=html;
+}
+
+visSkader();
+visElever();
+visPlaner();
+
 </script>
 
 </body>
