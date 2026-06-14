@@ -1,42 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="da">
 <head>
-    <title>Dansk Grund & Ejendom</title>
-    <style>
-        body{
-            font-family: Arial;
-            background:#f4f4f4;
-            text-align:center;
-            padding:50px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dansk Grund & Ejendom</title>
 
-        .box{
-            background:white;
-            padding:30px;
-            border-radius:15px;
-            max-width:700px;
-            margin:auto;
-        }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
 
-        h1{
-            color:#004080;
-        }
+body{
+    background:#0f1117;
+    color:white;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
 
-        button{
-            background:#004080;
-            color:white;
-            border:none;
-            padding:10px 20px;
-            border-radius:8px;
-            cursor:pointer;
-        }
-    </style>
+header{
+    background:#151922;
+    padding:20px;
+    text-align:center;
+    border-bottom:2px solid #f5c542;
+}
+
+header h1{
+    color:#f5c542;
+}
+
+.hero{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:50px;
+}
+
+.card{
+    background:#1b2130;
+    padding:40px;
+    border-radius:15px;
+    width:90%;
+    max-width:900px;
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+.card h2{
+    color:#f5c542;
+    margin-bottom:15px;
+}
+
+.card p{
+    line-height:1.7;
+}
+
+footer{
+    background:#151922;
+    text-align:center;
+    padding:20px;
+    border-top:2px solid #f5c542;
+}
+
+.login-btn{
+    background:#f5c542;
+    color:black;
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+</style>
 </head>
+
 <body>
-    <div class="box">
-        <h1>Dansk Grund & Ejendom</h1>
-        <p>Velkommen til vores officielle hjemmeside.</p>
-        <button>Kontakt os</button>
+
+<header>
+    <h1>Dansk Grund & Ejendom</h1>
+    <p>Roblox Ejendoms- og Grundfirma</p>
+</header>
+
+<section class="hero">
+    <div class="card">
+        <h2>Velkommen</h2>
+        <p>
+            Dansk Grund & Ejendom er et professionelt Roblox firma,
+            som arbejder med køb, salg og administration af grunde
+            og ejendomme.
+        </p>
     </div>
+</section>
+
+<footer>
+    <button class="login-btn" onclick="window.location.href='login.html'">
+        Medarbejder Login
+    </button>
+</footer>
+
 </body>
 </html>
