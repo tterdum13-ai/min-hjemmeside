@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<style>
+body{
+    background:#0f1117;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+    padding-top:100px;
+}
+
+h1{
+    color:#f5c542;
+}
+
+button{
+    background:#f5c542;
+    border:none;
+    padding:12px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>Medarbejder Portal</h1>
+
+<p>Velkommen <span id="user"></span></p>
+
+<button onclick="logout()">Log ud</button>
+
+<script>
+if(localStorage.getItem("loggedIn") !== "true"){
+    window.location.href = "login.html";
+}
+
+document.getElementById("user").innerText =
+localStorage.getItem("user");
+
+function logout(){
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>
