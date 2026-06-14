@@ -2,347 +2,225 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DGE Dashboard</title>
+<title>Login + Dashboard</title>
 
 <style>
-body{
-margin:0;
-font-family:Arial;
-background:#0f1117;
-color:white;
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #111;
+    color: white;
 }
 
-header{
-background:#151922;
-padding:15px;
-border-bottom:2px solid #f5c542;
-display:flex;
-justify-content:space-between;
-align-items:center;
+/* LOGIN */
+#loginBox {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: 100px auto;
+    background: #1c1c1c;
+    padding: 20px;
+    border-radius: 10px;
 }
 
-h1,h2{color:#f5c542;}
-
-.container{
-padding:20px;
-max-width:1200px;
-margin:auto;
+input {
+    margin: 5px 0;
+    padding: 10px;
 }
 
-.card{
-background:#1b2130;
-padding:20px;
-border-radius:12px;
-margin-bottom:20px;
+button {
+    padding: 10px;
+    cursor: pointer;
 }
 
-input,textarea{
-width:100%;
-padding:10px;
-margin:5px 0;
-border:none;
-border-radius:8px;
-background:#2a3142;
-color:white;
+/* DASHBOARD */
+header {
+    background: #222;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-button{
-background:#f5c542;
-border:none;
-padding:10px;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-margin-top:5px;
+.container {
+    padding: 20px;
 }
 
-.item{
-background:#2a3142;
-padding:10px;
-margin-top:10px;
-border-radius:8px;
+.card {
+    background: #1c1c1c;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
 }
 
-.small{
-font-size:12px;
-opacity:0.7;
+.homeBtn {
+    background: #2a3142;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.homeBtn:hover {
+    background: #3a435a;
+}
+
+.adminBox {
+    display: none;
+    background: #2b1b1b;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 20px;
 }
 </style>
+
 </head>
 
 <body>
 
-<script>
-if(localStorage.getItem("loggedIn") !== "true"){
-window.location.href="login.html";
-}
+<!-- LOGIN -->
+<div id="loginBox">
+    <h2>Login</h2>
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+</div>
 
-const user = localStorage.getItem("user");
-let rank = localStorage.getItem("rank");
-</script>
+<!-- DASHBOARD -->
+<div id="dashboard" style="display:none;">
 
 <header>
-<div>
-<h2>DGE Dashboard</h2>
-<div class="small">Bruger: <span id="u"></span> | Rank: <span id="r"></span></div>
-</div>
-<button onclick="logout()">Log ud</button>
+    <h2>Dashboard</h2>
+    <div>
+        <button class="homeBtn" onclick="goHome()">Home</button>
+        <button onclick="logout()">Logout</button>
+    </div>
 </header>
 
 <div class="container">
 
-<!-- ARBEJDSSKADE -->
-<div class="card">
-<h2>Arbejdsskader</h2>
+    <h3>Brugere</h3>
+    <div id="userList"></div>
 
-<input id="skadeNavn" placeholder="Navn">
-<textarea id="skadeText" placeholder="Beskrivelse"></textarea>
-<button onclick="addSkade()">Opret</button>
+    <div id="adminBox" class="adminBox">
+        <h3>Admin Panel</h3>
 
-<div id="skader"></div>
-</div>
+        <input id="targetUser" placeholder="Username">
+        <select id="newRank">
+            <option>Member</option>
+            <option>Mini Direktør</option>
+            <option>Direktør</option>
+        </select>
 
-<!-- BYGGEPLAN -->
-<div class="card">
-<h2>Byggeplaner (Alle kan se)</h2>
+        <button onclick="changeRank()">Skift Rank</button>
 
-<input id="planTitel" placeholder="Titel">
-<input id="planImg" placeholder="Billede URL">
-<textarea id="planText" placeholder="Beskrivelse"></textarea>
+        <h4>Users</h4>
+        <div id="users"></div>
+    </div>
 
-<button onclick="addPlan()">Opret</button>
-
-<div id="planer"></div>
-</div>
-
-<!-- ELEV RAPPORT -->
-<div class="card" id="elevBox" style="display:none;">
-<h2>Elev Rapporter</h2>
-
-<input id="elevName" placeholder="Elev">
-<textarea id="elevText" placeholder="Rapport"></textarea>
-
-<button onclick="addElev()">Opret</button>
-
-<div id="elevs"></div>
-</div>
-
-<!-- HÆNDELSER -->
-<div class="card" id="eventBox" style="display:none;">
-<h2>Hændelser</h2>
-
-<input id="eventTitle" placeholder="Titel">
-<textarea id="eventText" placeholder="Beskrivelse"></textarea>
-
-<button onclick="addEvent()">Opret</button>
-
-<div id="events"></div>
-</div>
-
-<!-- FAKTURA -->
-<div class="card" id="invoiceBox" style="display:none;">
-<h2>Faktura (Direktør)</h2>
-
-<input id="kunde" placeholder="Kunde">
-<input id="belob" placeholder="Beløb">
-<textarea id="invoiceText"></textarea>
-
-<button onclick="addInvoice()">Opret</button>
-
-<div id="invoices"></div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div class="card" id="adminBox" style="display:none;">
-<h2>Admin Control (Rank system)</h2>
-
-<input id="targetUser" placeholder="Brugernavn">
-<input id="newRank" placeholder="Ny Rank">
-
-<button onclick="changeRank()">Skift Rank</button>
-
-<div id="users"></div>
 </div>
 
 </div>
 
 <script>
 
-document.getElementById("u").innerText=user;
-document.getElementById("r").innerText=rank;
-
-/* ================= ROLLER ================= */
-
-if(rank === "Instrucktør" || rank === "Mini Direktør"){
-document.getElementById("elevBox").style.display="block";
-document.getElementById("eventBox").style.display="block";
-}
-
-if(rank === "Mini Direktør"){
-document.getElementById("invoiceBox").style.display="block";
-document.getElementById("adminBox").style.display="block";
-}
-
-/* ================= LOGOUT ================= */
-
-function logout(){
-localStorage.clear();
-window.location.href="login.html";
-}
-
-/* ================= SKADE ================= */
-
-function addSkade(){
-let n=document.getElementById("skadeNavn").value;
-let t=document.getElementById("skadeText").value;
-
-let d=JSON.parse(localStorage.getItem("skader")||"[]");
-d.push({n,t});
-localStorage.setItem("skader",JSON.stringify(d));
-renderSkader();
-}
-
-function renderSkader(){
-let d=JSON.parse(localStorage.getItem("skader")||"[]");
-let h="";
-d.forEach(i=>{
-h+=`<div class="item"><b>${i.n}</b><br>${i.t}</div>`;
-});
-document.getElementById("skader").innerHTML=h;
-}
-
-/* ================= PLAN ================= */
-
-function addPlan(){
-let t=document.getElementById("planTitel").value;
-let img=document.getElementById("planImg").value;
-let d=document.getElementById("planText").value;
-
-let data=JSON.parse(localStorage.getItem("planer")||"[]");
-data.push({t,img,d});
-localStorage.setItem("planer",JSON.stringify(data));
-renderPlan();
-}
-
-function renderPlan(){
-let data=JSON.parse(localStorage.getItem("planer")||"[]");
-let h="";
-data.forEach(i=>{
-h+=`
-<div class="item">
-<h3>${i.t}</h3>
-<p>${i.d}</p>
-<img src="${i.img}" style="width:100%;border-radius:8px;">
-</div>`;
-});
-document.getElementById("planer").innerHTML=h;
-}
-
-/* ================= ELEV ================= */
-
-function addElev(){
-let n=document.getElementById("elevName").value;
-let t=document.getElementById("elevText").value;
-
-let d=JSON.parse(localStorage.getItem("elev")||"[]");
-d.push({n,t});
-localStorage.setItem("elev",JSON.stringify(d));
-renderElev();
-}
-
-function renderElev(){
-let d=JSON.parse(localStorage.getItem("elev")||"[]");
-let h="";
-d.forEach(i=>{
-h+=`<div class="item"><b>${i.n}</b><br>${i.t}</div>`;
-});
-document.getElementById("elevs").innerHTML=h;
-}
-
-/* ================= EVENTS ================= */
-
-function addEvent(){
-let t=document.getElementById("eventTitle").value;
-let d=document.getElementById("eventText").value;
-
-let data=JSON.parse(localStorage.getItem("events")||"[]");
-data.push({t,d});
-localStorage.setItem("events",JSON.stringify(data));
-renderEvents();
-}
-
-function renderEvents(){
-let data=JSON.parse(localStorage.getItem("events")||"[]");
-let h="";
-data.forEach(i=>{
-h+=`<div class="item"><b>${i.t}</b><br>${i.d}</div>`;
-});
-document.getElementById("events").innerHTML=h;
-}
-
-/* ================= INVOICE ================= */
-
-function addInvoice(){
-let k=document.getElementById("kunde").value;
-let b=document.getElementById("belob").value;
-let t=document.getElementById("invoiceText").value;
-
-let d=JSON.parse(localStorage.getItem("invoice")||"[]");
-d.push({k,b,t});
-localStorage.setItem("invoice",JSON.stringify(d));
-renderInvoice();
-}
-
-function renderInvoice(){
-let d=JSON.parse(localStorage.getItem("invoice")||"[]");
-let h="";
-d.forEach(i=>{
-h+=`<div class="item"><b>${i.k}</b> - ${i.b} kr<br>${i.t}</div>`;
-});
-document.getElementById("invoices").innerHTML=h;
-}
-
-/* ================= ADMIN RANK SYSTEM ================= */
-
-const DB = {
-users: {
-"Mini": "Mini Direktør",
-"Instrucktør": "Instrucktør",
-"Oplært": "Oplært",
-"Under Oplæring": "Under Oplæring",
-"Elev": "Elev"
-}
+/* DATABASE */
+let DB = {
+    users: {
+        "admin": { password: "1234", rank: "Direktør" },
+        "mini": { password: "1234", rank: "Mini Direktør" },
+        "user1": { password: "1234", rank: "Member" }
+    }
 };
 
-function changeRank(){
+/* LOGIN */
+function login() {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
 
-let u=document.getElementById("targetUser").value;
-let r=document.getElementById("newRank").value;
+    if (!DB.users[username]) {
+        alert("Bruger findes ikke");
+        return;
+    }
 
-if(DB.users[u]){
-DB.users[u]=r;
-alert(u+" er nu "+r);
-showUsers();
+    if (DB.users[username].password !== password) {
+        alert("Forkert password");
+        return;
+    }
+
+    localStorage.setItem("user", username);
+    localStorage.setItem("rank", DB.users[username].rank);
+
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+    users[username] = DB.users[username].rank;
+    localStorage.setItem("users", JSON.stringify(users));
+
+    showDashboard();
 }
+
+/* SHOW DASHBOARD */
+function showDashboard() {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("dashboard").style.display = "block";
+
+    let rank = localStorage.getItem("rank");
+
+    if (rank === "Direktør" || rank === "Mini Direktør") {
+        document.getElementById("adminBox").style.display = "block";
+    }
+
+    showUsers();
 }
 
-function showUsers(){
-let h="";
-for(let u in DB.users){
-h+=`<div class="item">${u} → ${DB.users[u]}</div>`;
-}
-document.getElementById("users").innerHTML=h;
+/* USERS */
+function showUsers() {
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
+
+    let html = "";
+
+    for (let u in users) {
+        html += `<div class="card">${u} → ${users[u]}</div>`;
+    }
+
+    document.getElementById("users").innerHTML = html;
 }
 
-/* ================= INIT ================= */
+/* CHANGE RANK */
+function changeRank() {
+    let users = JSON.parse(localStorage.getItem("users") || "{}");
 
-renderSkade();
-renderPlan();
-renderElev();
-renderEvents();
-renderInvoice();
-showUsers();
+    let u = document.getElementById("targetUser").value;
+    let r = document.getElementById("newRank").value;
+
+    if (!users[u]) {
+        alert("Bruger findes ikke");
+        return;
+    }
+
+    users[u] = r;
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Rank opdateret");
+    showUsers();
+}
+
+/* HOME */
+function goHome() {
+    window.location.href = "index.html";
+}
+
+/* LOGOUT */
+function logout() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("rank");
+    location.reload();
+}
+
+/* AUTO LOGIN */
+if (localStorage.getItem("user")) {
+    showDashboard();
+}
 
 </script>
 
