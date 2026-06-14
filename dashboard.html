@@ -8,7 +8,7 @@
 <style>
 body{
     margin:0;
-    font-family:Arial,sans-serif;
+    font-family:Arial;
     background:#0f1117;
     color:white;
 }
@@ -24,9 +24,9 @@ h1,h2{
 }
 
 .container{
+    padding:20px;
     max-width:1200px;
     margin:auto;
-    padding:20px;
 }
 
 .card{
@@ -36,37 +36,31 @@ h1,h2{
     margin-bottom:20px;
 }
 
-input, textarea{
+input,textarea{
     width:100%;
     padding:10px;
     margin-top:10px;
     margin-bottom:10px;
-    background:#2a3142;
     border:none;
     border-radius:8px;
+    background:#2a3142;
     color:white;
 }
 
 button{
     background:#f5c542;
-    color:black;
     border:none;
-    padding:10px 15px;
+    padding:10px;
     border-radius:8px;
     cursor:pointer;
     font-weight:bold;
+    margin-top:5px;
 }
 
-.report{
+.item{
     background:#2a3142;
     padding:10px;
-    margin-top:10px;
     border-radius:8px;
-}
-
-img{
-    max-width:100%;
-    border-radius:10px;
     margin-top:10px;
 }
 
@@ -75,216 +69,187 @@ img{
 }
 </style>
 </head>
+
 <body>
 
 <script>
 if(localStorage.getItem("loggedIn") !== "true"){
-    window.location.href = "login.html";
+    window.location.href="login.html";
 }
+
+const rank = localStorage.getItem("user");
 </script>
 
 <header>
-    <h1>Dansk Grund & Ejendom</h1>
-    <button class="logout" onclick="logout()">Log Ud</button>
+<h1>Dansk Grund & Ejendom</h1>
+<button class="logout" onclick="logout()">Log Ud</button>
 </header>
 
 <div class="container">
 
+<!-- PROFIL -->
 <div class="card">
-    <h2>Profil</h2>
-    <p>Velkommen: <b id="rankName"></b></p>
+<h2>Profil</h2>
+<p>Rank: <b id="rank"></b></p>
 </div>
 
+<!-- ARBEJDSSKADE -->
 <div class="card">
-    <h2>Arbejdsskade Rapport</h2>
+<h2>Arbejdsskader</h2>
 
-    <input type="text" id="skadeNavn" placeholder="Navn">
-    <textarea id="skadeTekst" placeholder="Beskrivelse"></textarea>
+<input id="skadeNavn" placeholder="Navn">
+<textarea id="skadeText" placeholder="Beskrivelse"></textarea>
 
-    <button onclick="opretSkade()">Indsend Rapport</button>
+<button onclick="addSkade()">Opret</button>
 
-    <div id="skader"></div>
+<div id="skader"></div>
 </div>
 
-<div class="card" id="elevPanel" style="display:none;">
-    <h2>Elev Administration</h2>
-
-    <input type="text" id="elevNavn" placeholder="Elev Navn">
-
-    <button onclick="opretElev()">Opret Elev</button>
-
-    <div id="elever"></div>
-</div>
-
+<!-- BYGGEPANEL -->
 <div class="card" id="byggePanel" style="display:none;">
-    <h2>Byggeplaner</h2>
+<h2>Byggeplaner</h2>
 
-    <input type="text" id="bygTitel" placeholder="Projekt Titel">
+<input id="bygTitel" placeholder="Titel">
+<input id="bygBillede" placeholder="Billede URL">
+<textarea id="bygText" placeholder="Beskrivelse"></textarea>
 
-    <input type="text" id="bygBillede" placeholder="Billede URL">
+<button onclick="addPlan()">Opret</button>
 
-    <textarea id="bygBeskrivelse" placeholder="Beskrivelse"></textarea>
+<div id="planer"></div>
+</div>
 
-    <button onclick="opretPlan()">Opret Byggeplan</button>
+<!-- ELEV RAPPORT -->
+<div class="card" id="elevPanel" style="display:none;">
+<h2>Elev Rapporter</h2>
 
-    <div id="planer"></div>
+<input id="elevNavn" placeholder="Elev">
+<textarea id="elevText" placeholder="Rapport"></textarea>
+
+<button onclick="addElevRapport()">Opret</button>
+
+<div id="elevRapporter"></div>
+</div>
+
+<!-- HÆNDELSER -->
+<div class="card" id="eventPanel" style="display:none;">
+<h2>Hændelser</h2>
+
+<input id="eventTitle" placeholder="Titel">
+<textarea id="eventText" placeholder="Beskrivelse"></textarea>
+
+<button onclick="addEvent()">Opret</button>
+
+<div id="events"></div>
+</div>
+
+<!-- FAKTURA -->
+<div class="card" id="invoicePanel" style="display:none;">
+<h2>Faktura (Direktør)</h2>
+
+<input id="kunde" placeholder="Kunde">
+<input id="belob" placeholder="Beløb">
+<textarea id="fakturaText" placeholder="Beskrivelse"></textarea>
+
+<button onclick="addInvoice()">Opret Faktura</button>
+
+<div id="invoices"></div>
 </div>
 
 </div>
 
 <script>
 
-const rank = localStorage.getItem("user");
+document.getElementById("rank").innerText = rank;
 
-document.getElementById("rankName").innerText = rank;
+/* ================= ROLLER ================= */
+
+if(rank === "Oplært" || rank === "Instrucktør" || rank === "Mini Direktør"){
+document.getElementById("byggePanel").style.display="block";
+}
 
 if(rank === "Instrucktør" || rank === "Mini Direktør"){
-    document.getElementById("elevPanel").style.display = "block";
+document.getElementById("elevPanel").style.display="block";
+document.getElementById("eventPanel").style.display="block";
 }
 
-if(
-rank === "Oplært" ||
-rank === "Instrucktør" ||
-rank === "Mini Direktør"
-){
-    document.getElementById("byggePanel").style.display = "block";
+if(rank === "Mini Direktør"){
+document.getElementById("invoicePanel").style.display="block";
 }
+
+/* ================= LOGOUT ================= */
 
 function logout(){
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("user");
-    window.location.href="login.html";
+localStorage.removeItem("loggedIn");
+localStorage.removeItem("user");
+window.location.href="login.html";
 }
 
-function opretSkade(){
+/* ================= ARBEJDSSKADE ================= */
 
-const navn =
-document.getElementById("skadeNavn").value;
+function addSkade(){
 
-const tekst =
-document.getElementById("skadeTekst").value;
+let navn = document.getElementById("skadeNavn").value;
+let text = document.getElementById("skadeText").value;
 
-if(!navn || !tekst) return;
+let data = JSON.parse(localStorage.getItem("skader")||"[]");
 
-let data =
-JSON.parse(localStorage.getItem("skader") || "[]");
+data.push({navn,text});
 
-data.push({
-navn,
-tekst
-});
+localStorage.setItem("skader",JSON.stringify(data));
 
-localStorage.setItem(
-"skader",
-JSON.stringify(data)
-);
-
-visSkader();
+renderSkader();
 }
 
-function visSkader(){
+function renderSkader(){
 
-const data =
-JSON.parse(localStorage.getItem("skader") || "[]");
+let data = JSON.parse(localStorage.getItem("skader")||"[]");
 
-let html = "";
+let html="";
 
-data.forEach(r=>{
+data.forEach((s,i)=>{
 
-html += `
-<div class="report">
-<b>${r.navn}</b><br>
-${r.tekst}
+html+=`
+<div class="item">
+<b>${s.navn}</b><br>
+${s.text}
 </div>
 `;
 
 });
 
-document.getElementById("skader").innerHTML = html;
+document.getElementById("skader").innerHTML=html;
 }
 
-function opretElev(){
+/* ================= BYGGEPLAN ================= */
 
-const elev =
-document.getElementById("elevNavn").value;
+function addPlan(){
 
-if(!elev) return;
+let titel = document.getElementById("bygTitel").value;
+let billede = document.getElementById("bygBillede").value;
+let text = document.getElementById("bygText").value;
 
-let data =
-JSON.parse(localStorage.getItem("elever") || "[]");
+let data = JSON.parse(localStorage.getItem("planer")||"[]");
 
-data.push(elev);
+data.push({titel,billede,text});
 
-localStorage.setItem(
-"elever",
-JSON.stringify(data)
-);
+localStorage.setItem("planer",JSON.stringify(data));
 
-visElever();
+renderPlaner();
 }
 
-function visElever(){
+function renderPlaner(){
 
-const data =
-JSON.parse(localStorage.getItem("elever") || "[]");
+let data = JSON.parse(localStorage.getItem("planer")||"[]");
 
 let html="";
 
-data.forEach(e=>{
+data.forEach((p,i)=>{
 
-html += `
-<div class="report">${e}</div>
-`;
-
-});
-
-document.getElementById("elever").innerHTML=html;
-}
-
-function opretPlan(){
-
-const titel =
-document.getElementById("bygTitel").value;
-
-const billede =
-document.getElementById("bygBillede").value;
-
-const tekst =
-document.getElementById("bygBeskrivelse").value;
-
-if(!titel) return;
-
-let data =
-JSON.parse(localStorage.getItem("planer") || "[]");
-
-data.push({
-titel,
-billede,
-tekst
-});
-
-localStorage.setItem(
-"planer",
-JSON.stringify(data)
-);
-
-visPlaner();
-}
-
-function visPlaner(){
-
-const data =
-JSON.parse(localStorage.getItem("planer") || "[]");
-
-let html="";
-
-data.forEach(p=>{
-
-html += `
-<div class="report">
+html+=`
+<div class="item">
 <h3>${p.titel}</h3>
-<p>${p.tekst}</p>
-<img src="${p.billede}">
+<p>${p.text}</p>
+<img src="${p.billede}" style="width:100%;border-radius:8px;">
 </div>
 `;
 
@@ -293,9 +258,122 @@ html += `
 document.getElementById("planer").innerHTML=html;
 }
 
-visSkader();
-visElever();
-visPlaner();
+/* ================= ELEV RAPPORT ================= */
+
+function addElevRapport(){
+
+let n = document.getElementById("elevNavn").value;
+let t = document.getElementById("elevText").value;
+
+let data = JSON.parse(localStorage.getItem("elevRapporter")||"[]");
+
+data.push({n,t});
+
+localStorage.setItem("elevRapporter",JSON.stringify(data));
+
+renderElev();
+}
+
+function renderElev(){
+
+let data = JSON.parse(localStorage.getItem("elevRapporter")||"[]");
+
+let html="";
+
+data.forEach(e=>{
+
+html+=`
+<div class="item">
+<b>${e.n}</b><br>
+${e.t}
+</div>
+`;
+
+});
+
+document.getElementById("elevRapporter").innerHTML=html;
+}
+
+/* ================= HÆNDELSER ================= */
+
+function addEvent(){
+
+let t = document.getElementById("eventTitle").value;
+let d = document.getElementById("eventText").value;
+
+let data = JSON.parse(localStorage.getItem("events")||"[]");
+
+data.push({t,d});
+
+localStorage.setItem("events",JSON.stringify(data));
+
+renderEvents();
+}
+
+function renderEvents(){
+
+let data = JSON.parse(localStorage.getItem("events")||"[]");
+
+let html="";
+
+data.forEach(e=>{
+
+html+=`
+<div class="item">
+<b>${e.t}</b><br>
+${e.d}
+</div>
+`;
+
+});
+
+document.getElementById("events").innerHTML=html;
+}
+
+/* ================= FAKTURA ================= */
+
+function addInvoice(){
+
+let k = document.getElementById("kunde").value;
+let b = document.getElementById("belob").value;
+let t = document.getElementById("fakturaText").value;
+
+let data = JSON.parse(localStorage.getItem("invoices")||"[]");
+
+data.push({k,b,t});
+
+localStorage.setItem("invoices",JSON.stringify(data));
+
+renderInvoices();
+}
+
+function renderInvoices(){
+
+let data = JSON.parse(localStorage.getItem("invoices")||"[]");
+
+let html="";
+
+data.forEach(i=>{
+
+html+=`
+<div class="item">
+<b>${i.k}</b> - ${i.b} kr<br>
+${i.t}
+</div>
+`;
+
+});
+
+document.getElementById("invoices").innerHTML=html;
+}
+
+/* ================= INIT ================= */
+
+renderSkader();
+renderPlaner();
+renderElev();
+renderEvents();
+renderInvoices();
 
 </script>
 
