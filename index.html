@@ -6,96 +6,190 @@
 <title>Dansk Grund & Ejendom</title>
 
 <style>
+
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
 }
 
 body{
-    background:#0f1117;
-    color:white;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
+background:#0f1117;
+color:white;
+min-height:100vh;
+display:flex;
+flex-direction:column;
 }
 
 header{
-    background:#151922;
-    padding:20px;
-    text-align:center;
-    border-bottom:2px solid #f5c542;
+background:#151922;
+padding:20px;
+border-bottom:2px solid #f5c542;
+text-align:center;
 }
 
 header h1{
-    color:#f5c542;
+color:#f5c542;
+font-size:38px;
+}
+
+header p{
+opacity:.8;
+margin-top:5px;
+}
+
+nav{
+margin-top:15px;
+}
+
+nav button{
+background:#f5c542;
+border:none;
+padding:10px 20px;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+margin:5px;
 }
 
 .hero{
-    flex:1;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    padding:50px;
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:50px;
 }
 
 .card{
-    background:#1b2130;
-    padding:40px;
-    border-radius:15px;
-    width:90%;
-    max-width:900px;
-    box-shadow:0 0 20px rgba(0,0,0,0.4);
+background:#1b2130;
+padding:40px;
+border-radius:15px;
+max-width:1000px;
+width:90%;
+box-shadow:0 0 20px rgba(0,0,0,.5);
+text-align:center;
 }
 
 .card h2{
-    color:#f5c542;
-    margin-bottom:15px;
+color:#f5c542;
+margin-bottom:15px;
+font-size:32px;
 }
 
 .card p{
-    line-height:1.7;
+line-height:1.8;
+font-size:18px;
+}
+
+.features{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+margin-top:30px;
+}
+
+.feature{
+background:#2a3142;
+padding:20px;
+border-radius:10px;
+}
+
+.feature h3{
+color:#f5c542;
+margin-bottom:10px;
 }
 
 footer{
-    background:#151922;
-    text-align:center;
-    padding:20px;
-    border-top:2px solid #f5c542;
+background:#151922;
+border-top:2px solid #f5c542;
+padding:20px;
+text-align:center;
 }
 
 .login-btn{
-    background:#f5c542;
-    color:black;
-    padding:10px 20px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
+background:#f5c542;
+color:black;
+padding:12px 25px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+font-size:16px;
 }
+
+.login-btn:hover{
+opacity:.9;
+}
+
 </style>
 </head>
 
 <body>
 
 <header>
-    <h1>Dansk Grund & Ejendom</h1>
-    <p>Roblox Ejendoms- og Grundfirma</p>
+
+<h1>Dansk Grund & Ejendom</h1>
+
+<p>Professionelt Roblox Ejendomsfirma</p>
+
+<nav>
+<button onclick="window.location.href='login.html'">
+Medarbejder Login
+</button>
+</nav>
+
 </header>
 
 <section class="hero">
-    <div class="card">
-        <h2>Velkommen</h2>
-        <p>
-            Dansk Grund & Ejendom er et professionelt Roblox firma,
-            som arbejder med køb, salg og administration af grunde
-            og ejendomme.
-        </p>
-    </div>
+
+<div class="card">
+
+<h2>Velkommen til Dansk Grund & Ejendom</h2>
+
+<p>
+Dansk Grund & Ejendom er et professionelt Roblox firma,
+der arbejder med køb, salg, udvikling og administration
+af grunde og ejendomme.
+</p>
+
+<div class="features">
+
+<div class="feature">
+<h3>🏗️ Byggeprojekter</h3>
+<p>Vi udvikler moderne og realistiske projekter.</p>
+</div>
+
+<div class="feature">
+<h3>🏠 Ejendomme</h3>
+<p>Administration af grunde og bygninger.</p>
+</div>
+
+<div class="feature">
+<h3>👥 Medarbejdere</h3>
+<p>Professionelt personale med høj kvalitet.</p>
+</div>
+
+</div>
+
+</div>
+
 </section>
 
+<footer>
+
+<button class="login-btn"
+onclick="window.location.href='login.html'">
+Medarbejder Login
+</button>
+
+<br><br>
+
+<p>
+© 2026 Dansk Grund & Ejendom
+</p>
+
+</footer>
 
 </body>
 </html>
