@@ -2,227 +2,102 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<title>Login + Dashboard</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DGE Dashboard</title>
 <style>
-body {
-    font-family: Arial;
-    margin: 0;
-    background: #111;
-    color: white;
-}
-
-/* LOGIN */
-#loginBox {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    margin: 100px auto;
-    background: #1c1c1c;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-input {
-    margin: 5px 0;
-    padding: 10px;
-}
-
-button {
-    padding: 10px;
-    cursor: pointer;
-}
-
-/* DASHBOARD */
-header {
-    background: #222;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.container {
-    padding: 20px;
-}
-
-.card {
-    background: #1c1c1c;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 8px;
-}
-
-.homeBtn {
-    background: #2a3142;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.homeBtn:hover {
-    background: #3a435a;
-}
-
-.adminBox {
-    display: none;
-    background: #2b1b1b;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 20px;
-}
+body{font-family:Arial;background:#111;color:white;margin:0}
+header{background:#222;padding:15px;display:flex;justify-content:space-between}
+.container{padding:20px}
+.card{background:#1c1c1c;padding:15px;border-radius:10px;margin-bottom:15px}
+input,select,textarea,button{padding:10px;margin:5px 0;width:100%;box-sizing:border-box}
+button{cursor:pointer}
+#adminBox{display:none}
 </style>
-
 </head>
-
 <body>
-
-<!-- LOGIN -->
-<div id="loginBox">
-    <h2>Login</h2>
-    <input id="username" placeholder="Username">
-    <input id="password" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-</div>
-
-<!-- DASHBOARD -->
-<div id="dashboard" style="display:none;">
-
 <header>
-    <h2>Dashboard</h2>
-    <div>
-        <button class="homeBtn" onclick="goHome()">Home</button>
-        <button onclick="logout()">Logout</button>
-    </div>
+<h2>DGE Dashboard</h2>
+<div>
+<button onclick="location.href='index.html'">Home</button>
+<button onclick="logout()">Logout</button>
+</div>
 </header>
 
 <div class="container">
-
-    <h3>Brugere</h3>
-    <div id="userList"></div>
-
-    <div id="adminBox" class="adminBox">
-        <h3>Admin Panel</h3>
-
-        <input id="targetUser" placeholder="Username">
-        <select id="newRank">
-            <option>Member</option>
-            <option>Mini Direktør</option>
-            <option>Direktør</option>
-        </select>
-
-        <button onclick="changeRank()">Skift Rank</button>
-
-        <h4>Users</h4>
-        <div id="users"></div>
-    </div>
-
+<div class="card">
+<h3>Brugerinfo</h3>
+<p>Bruger: <span id="user"></span></p>
+<p>Rank: <span id="rank"></span></p>
 </div>
 
+<div class="card" id="adminBox">
+<h3>Admin Panel</h3>
+<input id="targetUser" placeholder="Brugernavn">
+<select id="newRank">
+<option>Elev</option>
+<option>Under Oplæring</option>
+<option>Oplært</option>
+<option>Instrucktør</option>
+<option>Mini Direktør</option>
+<option>Direktør</option>
+</select>
+<button onclick="changeRank()">Skift Rank</button>
+<div id="users"></div>
+</div>
 </div>
 
 <script>
-
-/* DATABASE */
-let DB = {
-    users: {
-        "admin": { password: "1234", rank: "Direktør" },
-        "mini": { password: "1234", rank: "Mini Direktør" },
-        "user1": { password: "1234", rank: "Member" }
-    }
-};
-
-/* LOGIN */
-function login() {
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
-
-    if (!DB.users[username]) {
-        alert("Bruger findes ikke");
-        return;
-    }
-
-    if (DB.users[username].password !== password) {
-        alert("Forkert password");
-        return;
-    }
-
-    localStorage.setItem("user", username);
-    localStorage.setItem("rank", DB.users[username].rank);
-
-    let users = JSON.parse(localStorage.getItem("users") || "{}");
-    users[username] = DB.users[username].rank;
-    localStorage.setItem("users", JSON.stringify(users));
-
-    showDashboard();
+if(localStorage.getItem("loggedIn")!=="true"){
+location.href="login.html";
 }
 
-/* SHOW DASHBOARD */
-function showDashboard() {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("dashboard").style.display = "block";
+document.getElementById("user").innerText=localStorage.getItem("user")||"";
+document.getElementById("rank").innerText=localStorage.getItem("rank")||"";
 
-    let rank = localStorage.getItem("rank");
+const rank=localStorage.getItem("rank");
 
-    if (rank === "Direktør" || rank === "Mini Direktør") {
-        document.getElementById("adminBox").style.display = "block";
-    }
-
-    showUsers();
+if(rank==="Direktør"||rank==="Mini Direktør"){
+document.getElementById("adminBox").style.display="block";
 }
 
-/* USERS */
-function showUsers() {
-    let users = JSON.parse(localStorage.getItem("users") || "{}");
-
-    let html = "";
-
-    for (let u in users) {
-        html += `<div class="card">${u} → ${users[u]}</div>`;
-    }
-
-    document.getElementById("users").innerHTML = html;
+function showUsers(){
+let users=JSON.parse(localStorage.getItem("users")||"{}");
+let html="";
+for(let u in users){
+html+=`<div>${u} → ${users[u]}</div>`;
+}
+document.getElementById("users").innerHTML=html;
 }
 
-/* CHANGE RANK */
-function changeRank() {
-    let users = JSON.parse(localStorage.getItem("users") || "{}");
+function changeRank(){
+let users=JSON.parse(localStorage.getItem("users")||"{}");
+let u=document.getElementById("targetUser").value;
+let r=document.getElementById("newRank").value;
 
-    let u = document.getElementById("targetUser").value;
-    let r = document.getElementById("newRank").value;
-
-    if (!users[u]) {
-        alert("Bruger findes ikke");
-        return;
-    }
-
-    users[u] = r;
-    localStorage.setItem("users", JSON.stringify(users));
-
-    alert("Rank opdateret");
-    showUsers();
+if(!users[u]){
+alert("Bruger findes ikke");
+return;
 }
 
-/* HOME */
-function goHome() {
-    window.location.href = "index.html";
+users[u]=r;
+localStorage.setItem("users",JSON.stringify(users));
+
+if(localStorage.getItem("user")===u){
+localStorage.setItem("rank",r);
 }
 
-/* LOGOUT */
-function logout() {
-    localStorage.removeItem("user");
-    localStorage.removeItem("rank");
-    location.reload();
+alert("Rank opdateret");
+showUsers();
 }
 
-/* AUTO LOGIN */
-if (localStorage.getItem("user")) {
-    showDashboard();
+function logout(){
+localStorage.removeItem("loggedIn");
+localStorage.removeItem("user");
+localStorage.removeItem("rank");
+location.href="login.html";
 }
 
+showUsers();
 </script>
-
 </body>
 </html>
